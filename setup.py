@@ -10,7 +10,11 @@ except ImportError:
 
 install_requires=[
     "TurboGears2 >= 2.1.4",
-    "tgext.pluggable"
+    "tgext.pluggable",
+    "tw2.core",
+    "tw2.forms >= 2.2.0.3",
+    "sprox >= 0.9.1",
+    'itsdangerous'
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
