@@ -11,7 +11,6 @@ from tg.i18n import lazy_ugettext as l_
 
 class NewPasswordForm(TableForm):
     data = HiddenField()
-    email_address = HiddenField()
     password = PasswordField(label=l_('New password'), validator=Validator(required=True))
     password_confirm = PasswordField(label=l_('Confirm new password'), validator=Validator(required=True))
     validator = FieldsMatch('password', 'password_confirm')
