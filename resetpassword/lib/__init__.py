@@ -18,9 +18,7 @@ def get_reset_password_form():
 
     reset_password_form = reset_password_config.get('reset_password_form_instance')
     if not reset_password_form:
-        form_path = reset_password_config.get('reset_password_form',
-                                              config.get('resetpassword.reset_password_form',
-                                                         'resetpassword.lib.forms.ResetPasswordForm'))
+        form_path = reset_password_config.get('reset_password_form', 'resetpassword.lib.forms.ResetPasswordForm')
         module, form_name = form_path.rsplit('.', 1)
         module = __import__(module, fromlist=form_name)
         form_class = getattr(module, form_name)
@@ -34,9 +32,7 @@ def get_new_password_form():
 
     new_password_form = reset_password_config.get('new_password_form_instance')
     if not new_password_form:
-        form_path = reset_password_config.get('new_password_form',
-                                              config.get('resetpassword.new_password_form',
-                                                         'resetpassword.lib.forms.NewPasswordForm'))
+        form_path = reset_password_config.get('new_password_form', 'resetpassword.lib.forms.NewPasswordForm')
         module, form_name = form_path.rsplit('.', 1)
         module = __import__(module, fromlist=form_name)
         form_class = getattr(module, form_name)
