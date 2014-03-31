@@ -4,7 +4,6 @@ from email.header import Header
 from email.mime.text import MIMEText
 from email.utils import parseaddr, formataddr
 from smtplib import SMTP
-import sys
 from tg import config
 
 try:
@@ -18,7 +17,8 @@ def get_reset_password_form():
 
     reset_password_form = reset_password_config.get('reset_password_form_instance')
     if not reset_password_form:
-        form_path = reset_password_config.get('reset_password_form', 'resetpassword.lib.forms.ResetPasswordForm')
+        form_path = reset_password_config.get('resetpassword.reset_password_form',
+                                              'resetpassword.lib.forms.ResetPasswordForm')
         module, form_name = form_path.rsplit('.', 1)
         module = __import__(module, fromlist=form_name)
         form_class = getattr(module, form_name)
@@ -30,15 +30,17 @@ def get_reset_password_form():
 def get_new_password_form():
     reset_password_config = config['_pluggable_resetpassword_config']
 
-    new_password_form = reset_password_config.get('new_password_form_instance')
+    new_password_form = reset_password_config.get('newpassword_form_instance')
     if not new_password_form:
-        form_path = reset_password_config.get('new_password_form', 'resetpassword.lib.forms.NewPasswordForm')
+        form_path = reset_password_config.get('reset_password.new_password_form',
+                                              'resetpassword.lib.forms.NewPasswordForm')
         module, form_name = form_path.rsplit('.', 1)
         module = __import__(module, fromlist=form_name)
         form_class = getattr(module, form_name)
         new_password_form = reset_password_config['new_password_form_instance'] = form_class()
 
     return new_password_form
+
 
 def _plain_send_mail(sender, recipient, subject, body):
     header_charset = 'ISO-8859-1'
@@ -73,6 +75,7 @@ def _plain_send_mail(sender, recipient, subject, body):
         smtp.login(config.get('resetpassword.smtp_login'), config.get('resetpassword.smtp_passwd'))
     smtp.sendmail(sender, recipient, msg.as_string())
     smtp.quit()
+
 
 def send_email(to_addr, sender, subject, body, rich=None):
     # Using turbomail if it exists, 'dumb' method otherwise

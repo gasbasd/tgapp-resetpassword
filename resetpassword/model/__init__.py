@@ -14,7 +14,7 @@ def init_model(app_session):
 
 
 def configure_models():
-    global provider, ResetPasswordRequest
+    global provider
 
     if tg.config.get('use_sqlalchemy', False):
         log.info('Configuring resetpassword for SQLAlchemy')

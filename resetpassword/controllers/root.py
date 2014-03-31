@@ -21,7 +21,7 @@ class RootController(TGController):
     @expose()
     @validate(get_reset_password_form(), error_handler=index)
     def reset_request(self, **kw):
-        user = model.provider.get_obj(app_model.User, params=dict(email_address=kw['email_address']))
+        user = model.provider.query(app_model.User, filters=dict(email_address=kw['email_address']))[1][0]
         password_frag = user.password[0:4]
         serializer = URLSafeSerializer(tg.config['beaker.session.secret'])
         serialized_data = serializer.dumps(dict(request_date=datetime.utcnow().strftime('%m/%d/%Y %H:%M'),
@@ -49,7 +49,6 @@ If you no longer wish to make the above change, or if you did not initiate this 
         email_data['body'] = email_data['body'] % dict(password_reset_link=password_reset_link)
         email_data['rich'] = email_data['rich'] % dict(password_reset_link=password_reset_link)
         send_email(user.email_address, **email_data)
-
         flash(_('Password reset request sent'))
         return plug_redirect('resetpassword', '/')
 
@@ -68,7 +67,8 @@ If you no longer wish to make the above change, or if you did not initiate this 
         serializer = URLSafeSerializer(tg.config['beaker.session.secret'])
         deserialized_data = serializer.loads(kw['data'])
         request_date = datetime.strptime(deserialized_data['request_date'], '%m/%d/%Y %H:%M')
-        user = model.provider.get_obj(app_model.User, params=dict(email_address=deserialized_data['email_address']))
+        user = model.provider.query(app_model.User,
+                                    filters=dict(email_address=deserialized_data['email_address']))[1][0]
         password_frag = user.password[0:4]
         if abs((datetime.now() - request_date).days) > 1:
             flash(_('Password reset request timed out'), 'error')

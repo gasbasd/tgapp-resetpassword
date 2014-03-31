@@ -5,10 +5,9 @@ from resetpassword import model
 from tgext.pluggable import app_model
 
 
-
 class RegisteredUserValidator(EmailValidator):
     def _validate_python(self, value, state=None):
-        if model.provider.get_obj(app_model.User, params=dict(email_address=value)) is None:
+        if model.provider.query(app_model.User, filters=dict(email_address=value))[0] < 1:
             raise ValidationError('User not found', self)
 
 
