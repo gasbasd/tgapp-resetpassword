@@ -44,4 +44,4 @@ The templates used by registration and that can be replaced with
 
     * resetpassword.templates.index -> Page with password reset request form
 
-    * resetpassword.templates.change_password -> Page with cache password request
+    * resetpassword.templates.change_password -> Page with change password request
