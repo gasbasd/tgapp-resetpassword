@@ -28,7 +28,7 @@ def get_reset_password_form():
 def get_new_password_form():
     reset_password_config = config['_pluggable_resetpassword_config']
 
-    new_password_form = reset_password_config.get('newpassword_form_instance')
+    new_password_form = reset_password_config.get('new_password_form_instance')
     if not new_password_form:
         form_path = reset_password_config.get('new_password_form', 'resetpassword.lib.forms.NewPasswordForm')
         module, form_name = form_path.rsplit('.', 1)
