@@ -57,6 +57,14 @@ If you no longer wish to make the above change, or if you did not initiate this 
         if kw.get('data') is None:
             flash(_('Invalid password reset request'), 'error')
             return plug_redirect('resetpassword', '/')
+
+        serializer = URLSafeSerializer(tg.config['beaker.session.secret'])
+        deserialized_data = serializer.loads(kw['data'])
+        user = model.provider.query(app_model.User,
+                                    filters=dict(email_address=deserialized_data['email_address']))[1][0]
+
+        tg.hooks.notify('resetpassword.before_render_change_password_template', args=(user, deserialized_data))
+
         return dict(new_password_form=get_new_password_form(),
                     form_data=dict(data=kw['data']),
                     action=plug_url('resetpassword', '/save_password'))
