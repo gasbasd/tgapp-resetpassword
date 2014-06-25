@@ -63,6 +63,7 @@ called during some actions to alter the default
 behavior of the appplications:
 
     * resetpassword.on_request(user, email_data, reset_link)
+    * resetpassword.before_render_change_password_template(user, deserialized_data)
 
 Exposed Templates
 --------------------
