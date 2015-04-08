@@ -50,6 +50,12 @@ If you no longer wish to make the above change, or if you did not initiate this 
         email_data['rich'] = email_data['rich'] % dict(password_reset_link=password_reset_link)
         send_email(user.email_address, **email_data)
         flash(_('Password reset request sent'))
+
+        redirect_url = None
+        redirect_url = tg.hooks.notify_with_value('resetpassword.before_redirect', redirect_url)
+        if redirect_url:
+            return redirect(redirect_url)
+
         return plug_redirect('resetpassword', '/')
 
     @expose('genshi:resetpassword.templates.change_password')

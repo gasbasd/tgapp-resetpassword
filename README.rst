@@ -64,6 +64,8 @@ behavior of the appplications:
 
     * resetpassword.on_request(user, email_data, reset_link)
     * resetpassword.before_render_change_password_template(user, deserialized_data)
+    * resetpassword.before_redirect(redirect_url)
+
 
 Exposed Templates
 --------------------
