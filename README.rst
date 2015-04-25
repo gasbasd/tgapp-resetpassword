@@ -51,9 +51,18 @@ Plugin Options
 When plugging ``tgapp-resetpassword`` the following options
 can be passed to the plug call:
 
-    * **reset_password.reset_password_form** -> Full python path of the form class to use for Reset Password form. By default *resetpassword.lib.forms.ResetPasswordForm* is used.
+    * **reset_password_form** -> Full python path of the form class to use for Reset Password form. By default *resetpassword.lib.forms.ResetPasswordForm* is used.
 
-    * **reset_password.new_password_form** -> Full python path of the form class to use for New Password form. By default *registration.lib.forms.NewPasswordForm* is used.
+    * **new_password_form** -> Full python path of the form class to use for New Password form. By default *registration.lib.forms.NewPasswordForm* is used.
+    
+So the plug call might look like::
+
+    plug(
+        base_config, 
+        'resetpassword', 
+        reset_password_form='myproject.lib.resetpassword_forms.ResetPasswordForm',
+        new_password_form='myproject.lib.resetpassword_forms.NewPasswordForm',
+    )
 
 Available Hooks
 ----------------------
@@ -76,3 +85,9 @@ The templates used by resetpassword and that can be replaced with
     * resetpassword.templates.index -> Page with password reset request form
 
     * resetpassword.templates.change_password -> Page with change password request
+
+Example usage (after the plug call)::
+
+    from tgext.pluggable import replace_template
+    replace_template(base_config, 'resetpassword.templates.index', 'myproject.templates.reset_password')
+    replace_template(base_config, 'resetpassword.templates.change_password', 'myproject.templates.change_password')
