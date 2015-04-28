@@ -11,6 +11,12 @@ from resetpassword import model
 import tg
 from tgext.pluggable import app_model, plug_url, plug_redirect
 
+try:
+    from tgext.mailer import Message as message, Attachment
+    from tgext.mailer import get_mailer
+except ImportError:
+    message = None
+
 
 class RootController(TGController):
     @expose('genshi:resetpassword.templates.index')
@@ -38,7 +44,6 @@ Please click this link to reset your password:
 
 If you no longer wish to make the above change, or if you did not initiate this request, please disregard and/or delete this e-mail.
 '''))
-
         email_data = {'sender': tg.config['resetpassword.email_sender'],
                       'subject': reset_password_config.get('mail_subject', _('Password reset request')),
                       'body': mail_body,
@@ -48,7 +53,19 @@ If you no longer wish to make the above change, or if you did not initiate this 
 
         email_data['body'] = email_data['body'] % dict(password_reset_link=password_reset_link)
         email_data['rich'] = email_data['rich'] % dict(password_reset_link=password_reset_link)
-        send_email(user.email_address, **email_data)
+
+        if message:
+            mailer = get_mailer(request)
+            message_to_send = message(
+                subject=email_data['subject'],
+                sender=email_data['sender'],
+                recipients=[user.email_address],
+                body=email_data['body'],
+                html=email_data['rich'] or None
+            )
+            mailer.send(message_to_send)
+        else:
+            send_email(user.email_address, **email_data)
         flash(_('Password reset request sent'))
 
         redirect_url = None
