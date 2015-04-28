@@ -5,12 +5,18 @@ from email.mime.text import MIMEText
 from email.utils import parseaddr, formataddr
 from smtplib import SMTP
 from tg import config
+from tg import request
 
 try:
     import turbomail
 except ImportError:
     turbomail = None
 
+try:
+    from tgext.mailer import Message as message, Attachment
+    from tgext.mailer import get_mailer
+except ImportError:
+    message = None
 
 def get_reset_password_form():
     reset_password_config = config['_pluggable_resetpassword_config']
@@ -82,5 +88,16 @@ def send_email(to_addr, sender, subject, body, rich=None):
         if rich:
             msg.rich = rich
         turbomail.enqueue(msg)
+    # Using tgext.mailer pluggable if it exists, 'dumb' method otherwise
+    elif message:
+            mailer = get_mailer(request)
+            message_to_send = message(
+                subject=subject,
+                sender=sender,
+                recipients=[to_addr],
+                body=body,
+                html=rich or None
+            )
+            mailer.send(message_to_send)
     else:
         _plain_send_mail(sender, to_addr, subject, body)

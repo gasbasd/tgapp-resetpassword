@@ -27,6 +27,10 @@ Then at the *end of the file* call plug with resetpassword::
 You will be able to access the plugged application at
 *http://localhost:8080/resetpassword*.
 
+If you use *tgext.mailer* you need to plug it::
+
+    plug(base_config, 'tgext.mailer')
+
 Some options are available that can be set on ``.ini``
 configuration file for your application.
 At least one option is required to make activation emails
@@ -34,7 +38,10 @@ work:
 
     * **resetpassword.email_sender** -> Outgoing mails sender
 
-If you are not using *TurboMail* a few more configuration
+If you are using *tgext.mailer* you need to set up some configuration, check here for available options:
+*https://github.com/amol-/tgext.mailer*.
+
+If you are not using neither *TurboMail* or *tgext.mailer* a few more configuration
 options must be set to make activation email work:
 
     * **resetpassword.smtp_host** -> SMTP server to use to send emails
