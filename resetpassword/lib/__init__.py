@@ -90,14 +90,14 @@ def send_email(to_addr, sender, subject, body, rich=None):
         turbomail.enqueue(msg)
     # Using tgext.mailer pluggable if it exists, 'dumb' method otherwise
     elif message:
-            mailer = get_mailer(request)
-            message_to_send = message(
-                subject=subject,
-                sender=sender,
-                recipients=[to_addr],
-                body=body,
-                html=rich or None
-            )
-            mailer.send(message_to_send)
+        mailer = get_mailer(request)
+        message_to_send = message(
+            subject=subject,
+            sender=sender,
+            recipients=[to_addr],
+            body=body,
+            html=rich or None
+        )
+        mailer.send(message_to_send)
     else:
         _plain_send_mail(sender, to_addr, subject, body)
