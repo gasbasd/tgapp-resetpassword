@@ -6,28 +6,31 @@ from tgext.pluggable import PluggableSession
 log = logging.getLogger('tgapp-resetpassword')
 
 DBSession = PluggableSession()
-provider = None
 
 
 def init_model(app_session):
     DBSession.configure(app_session)
 
 
-def configure_models():
-    global provider
+class PluggableSproxProvider(object):
+    def __init__(self):
+        self._provider = None
 
-    if tg.config.get('use_sqlalchemy', False):
-        log.info('Configuring resetpassword for SQLAlchemy')
-        from sprox.sa.provider import SAORMProvider
-        provider = SAORMProvider(session=DBSession, engine=False)
-    elif tg.config.get('use_ming', False):
-        log.info('Configuring resetpassword for Ming')
-        from sprox.mg.provider import MingProvider
-        provider = MingProvider(DBSession)
-    else:
-        raise ValueError('resetpassword should be used with sqlalchemy or ming')
+    def _configure_provider(self):
+        if tg.config.get('use_sqlalchemy', False):
+            log.info('Configuring resetpassword for SQLAlchemy')
+            from sprox.sa.provider import SAORMProvider
+            self._provider = SAORMProvider(session=DBSession)
+        elif tg.config.get('use_ming', False):
+            log.info('Configuring resetpassword for Ming')
+            from sprox.mg.provider import MingProvider
+            self._provider = MingProvider(DBSession)
+        else:
+            raise ValueError('resetpassword should be used with sqlalchemy or ming')
 
+    def __getattr__(self, item):
+        if self._provider is None:
+            self._configure_provider()
+        return getattr(self._provider, item)
 
-def configure_provider():
-    if tg.config.get('use_sqlalchemy', False):
-        provider.engine = DBSession.bind
+provider = PluggableSproxProvider()
