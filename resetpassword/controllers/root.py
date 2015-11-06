@@ -23,7 +23,8 @@ class RootController(TGController):
     def reset_request(self, **kw):
         user = model.provider.query(app_model.User, filters=dict(email_address=kw['email_address']))[1][0]
         password_frag = user.password[0:4]
-        serializer = URLSafeSerializer(tg.config['beaker.session.secret'])
+        secret = tg.config.get('session.secret', tg.config.get('beaker.session.secret'))
+        serializer = URLSafeSerializer(secret)
         serialized_data = serializer.dumps(dict(request_date=datetime.utcnow().strftime('%m/%d/%Y %H:%M'),
                                                 email_address=kw['email_address'], password_frag=password_frag))
 
@@ -63,8 +64,9 @@ If you no longer wish to make the above change, or if you did not initiate this 
         if kw.get('data') is None:
             flash(_('Invalid password reset request'), 'error')
             return plug_redirect('resetpassword', '/')
-
-        serializer = URLSafeSerializer(tg.config['beaker.session.secret'])
+        
+        secret = tg.config.get('session.secret', tg.config.get('beaker.session.secret'))
+        serializer = URLSafeSerializer(secret)
         deserialized_data = serializer.loads(kw['data'])
         user = model.provider.query(app_model.User,
                                     filters=dict(email_address=deserialized_data['email_address']))[1][0]
@@ -78,7 +80,8 @@ If you no longer wish to make the above change, or if you did not initiate this 
     @expose()
     @validate(get_new_password_form(), error_handler=change_password)
     def save_password(self, **kw):
-        serializer = URLSafeSerializer(tg.config['beaker.session.secret'])
+        secret = tg.config.get('session.secret', tg.config.get('beaker.session.secret'))
+        serializer = URLSafeSerializer(secret)
         deserialized_data = serializer.loads(kw['data'])
         request_date = datetime.strptime(deserialized_data['request_date'], '%m/%d/%Y %H:%M')
         user = model.provider.query(app_model.User,
