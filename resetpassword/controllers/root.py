@@ -13,7 +13,7 @@ from tgext.pluggable import app_model, plug_url, plug_redirect
 
 
 class RootController(TGController):
-    @expose('genshi:resetpassword.templates.index')
+    @expose('resetpassword.templates.index')
     def index(self, **kw):
         return dict(reset_password_form=get_reset_password_form(), 
                     action=plug_url('resetpassword', '/reset_request'))
@@ -59,7 +59,7 @@ If you no longer wish to make the above change, or if you did not initiate this 
 
         return plug_redirect('resetpassword', '/')
 
-    @expose('genshi:resetpassword.templates.change_password')
+    @expose('resetpassword.templates.change_password')
     def change_password(self, **kw):
         if kw.get('data') is None:
             flash(_('Invalid password reset request'), 'error')
