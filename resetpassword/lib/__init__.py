@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import sys
 from email.header import Header
 from email.mime.text import MIMEText
 from email.utils import parseaddr, formataddr
@@ -17,6 +18,12 @@ try:
     from tgext.mailer import get_mailer
 except ImportError:
     message = None
+
+try:
+    unicode_text = unicode
+except NameError:
+    unicode_text = str
+
 
 def get_reset_password_form():
     reset_password_config = config['_pluggable_resetpassword_config']
@@ -58,16 +65,17 @@ def _plain_send_mail(sender, recipient, subject, body):
     sender_name, sender_addr = parseaddr(sender)
     recipient_name, recipient_addr = parseaddr(recipient)
 
-    sender_name = str(Header(unicode(sender_name), header_charset))
-    recipient_name = str(Header(unicode(recipient_name), header_charset))
+    sender_name = str(Header(unicode_text(sender_name), header_charset))
+    recipient_name = str(Header(unicode_text(recipient_name), header_charset))
 
-    sender_addr = sender_addr.encode('ascii')
-    recipient_addr = recipient_addr.encode('ascii')
+    if sys.version_info < (3, 0):
+        sender_addr = sender_addr.encode('ascii')
+        recipient_addr = recipient_addr.encode('ascii')
 
     msg = MIMEText(body.encode(body_charset), 'plain', body_charset)
     msg['From'] = formataddr((sender_name, sender_addr))
     msg['To'] = formataddr((recipient_name, recipient_addr))
-    msg['Subject'] = Header(unicode(subject), header_charset)
+    msg['Subject'] = Header(unicode_text(subject), header_charset)
 
     smtp = SMTP(config.get('resetpassword.smtp_host', 'localhost'), int(config.get('resetpassword.smtp_port', 0)))
     if config.get('resetpassword.smtp_login'):
